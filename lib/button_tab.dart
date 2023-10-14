@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_toggle_tab/helper.dart';
 
-import 'helper.dart';
-
-class ButtonsTab extends StatefulWidget {
+class ButtonsTab extends StatelessWidget {
   /// Define attribute Widget and State
   ///
   const ButtonsTab({
-    Key? key,
+    super.key,
     this.title,
     this.onPressed,
     required this.width,
@@ -17,11 +16,12 @@ class ButtonsTab extends StatefulWidget {
     this.unSelectedTextStyle,
     required this.selectedColors,
     this.icons,
+    this.iconSize,
     required this.unSelectedColors,
     this.begin,
     this.end,
     this.marginSelected = EdgeInsets.zero,
-  }) : super(key: key);
+  });
 
   final String? title;
   final Function? onPressed;
@@ -37,6 +37,7 @@ class ButtonsTab extends StatefulWidget {
   final bool? isSelected;
   final double? radius;
   final IconData? icons;
+  final double? iconSize;
 
   final Alignment? begin;
   final Alignment? end;
@@ -44,61 +45,60 @@ class ButtonsTab extends StatefulWidget {
   final EdgeInsets? marginSelected;
 
   @override
-  _ButtonsTabState createState() => _ButtonsTabState();
-}
-
-class _ButtonsTabState extends State<ButtonsTab> {
-  @override
   Widget build(BuildContext context) {
-    return Container(
-        width: widget.width ?? widthInPercent(100, context),
-        height: widget.height ?? 50,
-        //wrap with container to fix margin issue
-        child: Container(
-          margin: widget.isSelected! ? widget.marginSelected : EdgeInsets.zero,
-          decoration: widget.isSelected!
-              ? bdHeader.copyWith(
-                  borderRadius: BorderRadius.circular(widget.radius!),
-                  gradient: LinearGradient(
-                    // Where the linear gradient begins and ends
-                    begin: widget.begin ?? Alignment.topCenter,
-                    end: widget.end ?? Alignment.bottomCenter,
-                    colors: widget.selectedColors ??
-                        [Theme.of(context).primaryColor],
-                  ))
-              : null,
-          child: TextButton(
-              onPressed: widget.onPressed as void Function()?,
-              style: ButtonStyle(
-                  shape: MaterialStateProperty.all(new RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(widget.radius!))),
-                  padding: MaterialStateProperty.all(EdgeInsets.zero)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  widget.icons != null
-                      ? Icon(
-                          widget.icons,
-                          color: widget.isSelected!
-                              ? widget.selectedTextStyle!.color
-                              : widget.unSelectedTextStyle!.color,
-                        )
-                      : Container(),
-                  Visibility(
-                    visible: widget.icons != null && widget.title.isNotEmpty,
-                    child: SizedBox(
-                      width: 4,
-                    ),
-                  ),
-                  Text(
-                    widget.title!,
-                    style: widget.isSelected!
-                        ? widget.selectedTextStyle
-                        : widget.unSelectedTextStyle,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              )),
-        ));
+    return SizedBox(
+      width: width ?? widthInPercent(100, context),
+      height: height ?? 50,
+      //wrap with container to fix margin issue
+      child: Container(
+        margin: isSelected! ? marginSelected : EdgeInsets.zero,
+        decoration: isSelected!
+            ? bdHeader.copyWith(
+                borderRadius: BorderRadius.circular(radius!),
+                gradient: LinearGradient(
+                  // Where the linear gradient begins and ends
+                  begin: begin ?? Alignment.topCenter,
+                  end: end ?? Alignment.bottomCenter,
+                  colors: selectedColors ?? [Theme.of(context).primaryColor],
+                ),
+              )
+            : null,
+        child: TextButton(
+          onPressed: onPressed as void Function()?,
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(radius!),
+              ),
+            ),
+            padding: MaterialStateProperty.all(EdgeInsets.zero),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icons != null)
+                Icon(
+                  icons,
+                  size: iconSize,
+                  color: isSelected!
+                      ? selectedTextStyle!.color
+                      : unSelectedTextStyle!.color,
+                )
+              else
+                const SizedBox.shrink(),
+              Visibility(
+                visible: icons != null && title.toString().isNotEmpty,
+                child: const SizedBox(width: 4),
+              ),
+              Text(
+                title!,
+                style: isSelected! ? selectedTextStyle : unSelectedTextStyle,
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
